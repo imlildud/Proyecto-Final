@@ -19,13 +19,12 @@ export const useProductStore = create((set) => ({
     }
   },
 
-  // Acción para registrar un nuevo producto (Jornada 2 - HU02)
+  // Acción para registrar un nuevo producto 
   createProduct: async (newProduct) => {
     try {
       const response = await axios.post(`${API}/api/products`, newProduct);
       const created = response.data.data;
 
-      // Agregamos el producto recién creado al inicio de la lista en memoria
       set((state) => ({
         products: [created, ...state.products],
       }));
