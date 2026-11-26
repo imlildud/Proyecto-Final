@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
+import { Routes, Route } from "react-router-dom";
 import { useProductStore } from "./store/useProductStore";
 import ProductCard from "./components/ProductCard";
 // Importamos el formulario de alta (Jornada 2)
 import ProductForm from "./components/ProductForm";
+// Importamos la pantalla de edición de un producto (Jornada 3)
+import ProductPage from "./components/ProductPage";
 
-export default function App() {
+// Pantalla principal: catálogo de productos y formulario de alta
+function Home() {
   const { products, loading, error, fetchProducts } = useProductStore();
   // Estado local para mostrar u ocultar el formulario de nuevo producto
   const [showForm, setShowForm] = useState(false);
@@ -65,5 +69,15 @@ export default function App() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    // Rutas de la aplicación: catálogo en "/" y edición de un producto en "/product/:id" (Jornada 3)
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/product/:id" element={<ProductPage />} />
+    </Routes>
   );
 }

@@ -3,16 +3,25 @@ import request from "supertest";
 import app from "../src/app.js";
 import { pool } from "../src/config/db.js";
 
+const valido = {
+  name: "Producto prueba HU03",
+  price: 150,
+  image: "https://picsum.photos/seed/test/400/300",
+};
+
+// Id del producto creado en la prueba de alta; se declara aquí para limpiarlo al final
+let createdProductId;
+
+// Se ejecuta una sola vez, cuando terminan TODAS las pruebas del archivo.
+// Antes estaba dentro del primer describe y cerraba el pool antes de las pruebas de PUT.
+afterAll(async () => {
+  if (createdProductId) {
+    await pool.query("DELETE FROM products WHERE id = $1", [createdProductId]);
+  }
+  await pool.end();
+});
+
 describe("API /api/products - Jornada 2 (HU02 Alta)", () => {
-  let createdProductId;
-
-  afterAll(async () => {
-    if (createdProductId) {
-      await pool.query("DELETE FROM products WHERE id = $1", [createdProductId]);
-    }
-    await pool.end();
-  });
-
   // Caso de aceptación 1: Alta válida responde 201 y limpia espacios en el nombre
   test("POST /api/products - Crear un producto válido y responder 201", async () => {
     const newProduct = {
@@ -57,5 +66,24 @@ describe("API /api/products - Jornada 2 (HU02 Alta)", () => {
 
     expect(res.statusCode).toBe(400);
     expect(res.body.success).toBe(false);
+  });
+});
+
+describe("PUT /api/products/:id", () => {
+  it("ID inexistente responde 404", async () => {
+    const res = await request(app).put("/api/products/999999").send(valido);
+    expect(res.status).toBe(404);
+  });
+
+  it("edición válida responde 200 y persiste", async () => {
+    const creado = await request(app).post("/api/products").send(valido);
+    const id = creado.body.data.id;
+    const res = await request(app)
+      .put(`/api/products/${id}`)
+      .send({ ...valido, name: "Nombre editado" });
+    expect(res.status).toBe(200);
+    const check = await request(app).get(`/api/products/${id}`);
+    expect(check.body.data.name).toBe("Nombre editado");
+    await pool.query("DELETE FROM products WHERE id = $1", [id]);
   });
 });

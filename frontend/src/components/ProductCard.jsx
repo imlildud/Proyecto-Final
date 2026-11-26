@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function ProductCard({ product }) {
   return (
     <div className="card bg-base-100 shadow-md">
@@ -13,6 +15,12 @@ export default function ProductCard({ product }) {
         <p className="text-lg font-semibold text-primary">
           ${product.price.toFixed(2)}
         </p>
+        {/* Enlace a la pantalla de edición del producto (Jornada 3 - HU03) */}
+        <div className="card-actions justify-end">
+          <Link to={`/product/${product.id}`} className="btn btn-sm btn-outline">
+            Editar
+          </Link>
+        </div>
       </div>
     </div>
   );
