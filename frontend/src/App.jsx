@@ -1,9 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useProductStore } from "./store/useProductStore";
 import ProductCard from "./components/ProductCard";
+// Importamos el formulario de alta (Jornada 2)
+import ProductForm from "./components/ProductForm";
 
 export default function App() {
   const { products, loading, error, fetchProducts } = useProductStore();
+  // Estado local para mostrar u ocultar el formulario de nuevo producto
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -11,11 +15,26 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-base-200">
-      <header className="navbar bg-base-100 shadow px-6">
+      <header className="navbar bg-base-100 shadow px-6 justify-between">
         <h1 className="text-2xl font-bold">🛒 Catálogo de productos</h1>
+        {/* Botón para abrir/cerrar el formulario de registro (HU02) */}
+        <button
+          className="btn btn-primary btn-sm"
+          onClick={() => setShowForm((prev) => !prev)}
+        >
+          {showForm ? "Cerrar formulario" : "+ Nuevo producto"}
+        </button>
       </header>
 
       <main className="max-w-6xl mx-auto p-6">
+        {/* Formulario desplegable para dar de alta un producto (Jornada 2) */}
+        {showForm && (
+          <div className="card bg-base-100 shadow-md p-6 mb-6 max-w-lg mx-auto">
+            <h2 className="text-lg font-bold mb-4">Registrar nuevo producto</h2>
+            <ProductForm onSuccess={() => setShowForm(false)} />
+          </div>
+        )}
+
         {loading && (
           <div className="flex justify-center py-20">
             <span className="loading loading-spinner loading-lg" />
