@@ -87,3 +87,20 @@ describe("PUT /api/products/:id", () => {
     await pool.query("DELETE FROM products WHERE id = $1", [id]);
   });
 });
+
+// DELETE /api/products/:id (Jornada 4 - HU04: Eliminar un producto)
+describe("DELETE /api/products/:id", () => {
+  it("elimina un producto y luego responde 404", async () => {
+    const creado = await request(app).post("/api/products").send(valido);
+    const id = creado.body.data.id;
+
+    const res = await request(app).delete(`/api/products/${id}`);
+    expect(res.status).toBe(200);
+
+    const check = await request(app).get(`/api/products/${id}`);
+    expect(check.status).toBe(404);
+
+    const otra = await request(app).delete(`/api/products/${id}`);
+    expect(otra.status).toBe(404);
+  });
+});

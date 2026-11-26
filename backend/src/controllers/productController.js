@@ -98,3 +98,24 @@ if (!result.success) {
     res.status(500).json({ success: false, message: "Error al actualizar el producto" });
   }
 };
+// DELETE /api/products/:id (Jornada 4 - HU04: Eliminar un producto)
+export const deleteProduct = async (req, res) => {
+    const id = Number(req.params.id);
+  if (!Number.isInteger(id)) {
+    return res.status(400).json({ success: false, message: "ID inválido" });
+  }
+  try {
+    // Consulta parametrizada; RETURNING nos dice si realmente existía el producto
+    const { rows } = await pool.query(
+      "DELETE FROM products WHERE id = $1 RETURNING id",
+      [id]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Producto no encontrado" });
+    }
+    res.status(200).json({ success: true, message: "Producto eliminado" });
+  } catch (error) {
+    console.error("Error en deleteProduct:", error);
+    res.status(500).json({ success: false, message: "Error interno del servidor" });
+  }
+};
