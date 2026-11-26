@@ -49,3 +49,52 @@ export const createProduct = async (req, res) => {
     res.status(500).json({ success: false, message: "Error interno del servidor" });
   }
 };
+
+export const getProductById = async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) {
+    return res.status(400).json({ success: false, message: "ID inválido" });
+  }
+  try {
+    const { rows } = await pool.query(
+      "SELECT id, name, price, image FROM products WHERE id = $1",
+      [id]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Producto no encontrado" });
+    }
+    res.status(200).json({ success: true, data: { ...rows[0], price: Number(rows[0].price) } });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Error al obtener el producto" });
+  }
+};
+
+export const updateProduct = async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) {
+    return res.status(400).json({ success: false, message: "ID inválido" });
+  }
+const result = createProductSchema.safeParse(req.body);
+if (!result.success) {
+  return res.status(400).json({
+    success: false,
+    message: "Datos de producto inválidos",
+    errors: result.error.flatten().fieldErrors,
+  });
+}
+  const { name, price, image } = result.data;
+  try {
+    const { rows } = await pool.query(
+      "UPDATE products SET name = $1, price = $2, image = $3 WHERE id = $4 RETURNING id, name, price, image",
+      [name, price, image, id]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Producto no encontrado" });
+    }
+    res.status(200).json({ success: true, data: { ...rows[0], price: Number(rows[0].price) } });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Error al actualizar el producto" });
+  }
+};
