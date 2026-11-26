@@ -73,4 +73,22 @@ export const useProductStore = create((set) => ({
       return { success: false, message, fieldErrors };
     }
   },
+
+  // Acción para eliminar un producto por su ID 
+  deleteProduct: async (id) => {
+    try {
+      await axios.delete(`${API}/api/products/${id}`);
+
+      // Solo quitamos el producto del catálogo en memoria si el servidor confirmó la baja
+      set((state) => ({
+        products: state.products.filter((p) => p.id !== id),
+      }));
+
+      return { success: true };
+    } catch (err) {
+      const message =
+        err.response?.data?.message || "No se pudo eliminar el producto";
+      return { success: false, message };
+    }
+  },
 }));
