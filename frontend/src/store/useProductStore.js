@@ -19,13 +19,12 @@ export const useProductStore = create((set) => ({
     }
   },
 
-  // Acción para registrar un nuevo producto (Jornada 2 - HU02)
+  // Acción para registrar un nuevo producto 
   createProduct: async (newProduct) => {
     try {
       const response = await axios.post(`${API}/api/products`, newProduct);
       const created = response.data.data;
 
-      // Agregamos el producto recién creado al inicio de la lista en memoria
       set((state) => ({
         products: [created, ...state.products],
       }));
@@ -72,6 +71,24 @@ export const useProductStore = create((set) => ({
         err.response?.data?.message || "No se pudo actualizar el producto";
       const fieldErrors = err.response?.data?.errors || null;
       return { success: false, message, fieldErrors };
+    }
+  },
+
+  // Acción para eliminar un producto por su ID 
+  deleteProduct: async (id) => {
+    try {
+      await axios.delete(`${API}/api/products/${id}`);
+
+      // Solo quitamos el producto del catálogo en memoria si el servidor confirmó la baja
+      set((state) => ({
+        products: state.products.filter((p) => p.id !== id),
+      }));
+
+      return { success: true };
+    } catch (err) {
+      const message =
+        err.response?.data?.message || "No se pudo eliminar el producto";
+      return { success: false, message };
     }
   },
 }));

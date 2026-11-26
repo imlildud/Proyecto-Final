@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { useProductStore } from "./store/useProductStore";
 import ProductCard from "./components/ProductCard";
-// Importamos el formulario de alta (Jornada 2)
+// Importamos el formulario de alta de algun producto
 import ProductForm from "./components/ProductForm";
 // Importamos la pantalla de edición de un producto (Jornada 3)
 import ProductPage from "./components/ProductPage";
@@ -31,7 +31,7 @@ function Home() {
       </header>
 
       <main className="max-w-6xl mx-auto p-6">
-        {/* Formulario desplegable para dar de alta un producto (Jornada 2) */}
+        {/* Formulario desplegable para dar de alta un producto*/}
         {showForm && (
           <div className="card bg-base-100 shadow-md p-6 mb-6 max-w-lg mx-auto">
             <h2 className="text-lg font-bold mb-4">Registrar nuevo producto</h2>
